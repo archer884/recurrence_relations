@@ -81,11 +81,10 @@ pub fn main() {
              .long("count")
              .help("Sets the length of the series.")
              .takes_value(true))
-        .arg(Arg::new("operation")
-             .short("o")
-             .long("operation")
-             .help("Defines an operation used to create the series, e.g. \"+3\"")
-             .multiple(true)
+        .arg(Arg::new("instructions")
+             .short("i")
+             .long("instructions")
+             .help("Defines the instructions used to create the series, e.g. \"+3 *2\"")
              .takes_value(true))
         .get_matches();
 
@@ -111,13 +110,29 @@ pub fn main() {
     // is unfortunate. As a stop-gap, because I'm not planning to fork and submit a pull 
     // request for this (at least not this afternoon!), I'm just going to take everything 
     // that can be parsed as an instruction and call it one.
+    //
+    // My plan did not work. The following code works, theoretically, but the arguments 
+    // required to make use of this code will throw an error in clap:
+    // 
+    //      let instructions: Vec<Instruction> = std::env::args()
+    //          .filter_map(|arg| arg.parse().ok())
+    //          .collect();
+    //
+    // So... I'm going to have to have an argument named "operations" instead that takes 
+    // all of the operations as one chunk. I can then split the string they return to 
+    // get the individual instructions.
+    //
+    // I should probably call the argument instructions instead of operations.
 
-    let instructions: Vec<Instruction> = std::env::args().filter_map(|arg| arg.parse().ok()).collect();
-
-    if instructions.len() == 0 {
-        println!("Instruction(s) not provided.");
-        return;
-    }
+    let instructions: Vec<Instruction> = match matches.value_of("instructions") {
+        Some(input) => {
+            input.split(" ").filter_map(|s| s.parse().ok()).collect()
+        },
+        None => {
+            println!("Unable to parse instructions.");
+            return;
+        },
+    };
 
     let mut i = seed;
     for _ in 0..count {
