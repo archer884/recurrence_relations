@@ -1,0 +1,12 @@
+[root]
+name = "recurrence_relations"
+version = "0.0.1"
+dependencies = [
+ "clap 0.4.3 (git+https://github.com/kbknapp/clap-rs)",
+]
+
+[[package]]
+name = "clap"
+version = "0.4.3"
+source = "git+https://github.com/kbknapp/clap-rs#1787a6623078fa29f6a2e70cd179e5d5f2be171c"
+
