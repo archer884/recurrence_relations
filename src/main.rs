@@ -125,9 +125,7 @@ pub fn main() {
     // I should probably call the argument instructions instead of operations.
 
     let instructions: Vec<Instruction> = match matches.value_of("instructions") {
-        Some(input) => {
-            input.split(" ").filter_map(|s| s.parse().ok()).collect()
-        },
+        Some(input) => input.split(" ").filter_map(|s| s.parse().ok()).collect(),
         None => {
             println!("Unable to parse instructions.");
             return;
