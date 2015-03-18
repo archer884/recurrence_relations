@@ -6,4 +6,5 @@ authors = ["J/A <archer884@gmail.com>"]
 
 [dependencies.clap]
 
-git = "https://github.com/kbknapp/clap-rs"
+git = "https://github.com/archer884/clap-rs"
+branch = "master+typed-value-of"

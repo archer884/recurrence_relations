@@ -56,7 +56,7 @@ impl FromStr for Operation {
 
 pub fn main() {
     let matches = App::new("Recurrence Relationships")
-        .version("0.0.1")
+        .version("0.0.3")
         .author("J/A <archer884@gmail.com>")
         .about("Generates numeric series based on recurrence relationships.")
         .arg(Arg::new("seed")
