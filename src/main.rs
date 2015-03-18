@@ -76,7 +76,7 @@ pub fn main() {
              .takes_value(true))
         .get_matches();
 
-    let seed = match matches.value_of("seed").and_then(|seed| seed.parse().ok()) {
+    let seed = match matches.parsed_value_of("seed") {
         Some(n) => n,
         None => {
             println!("Seed not provided.");
@@ -84,7 +84,7 @@ pub fn main() {
         },
     };
 
-    let count = match matches.value_of("count").and_then(|count| count.parse().ok()) {
+    let count = match matches.parsed_value_of("count") {
         Some(n) => n,
         None => {
             println!("Count not provided.");
@@ -109,8 +109,6 @@ pub fn main() {
     // So... I'm going to have to have an argument named "operations" instead that takes 
     // all of the operations as one chunk. I can then split the string they return to 
     // get the individual instructions.
-    //
-    // I should probably call the argument instructions instead of operations.
 
     let operations: Vec<Operation> = match matches.value_of("operations") {
         Some(input) => input.split(" ").filter_map(|s| s.parse().ok()).collect(),
