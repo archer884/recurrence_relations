@@ -9,60 +9,48 @@ use std::str::FromStr;
 /// right now to add the value to these enum variants, so that's going to 
 /// just have to be an enhancement. The problem would mainly be in parsing.
 enum Operation {
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
+    Add(f64),
+    Subtract(f64),
+    Multiply(f64),
+    Divide(f64),
+}
+
+impl Operation {
+    // Apply is a method of Operation and should have 
+    // gone here instead of in the impl block for 
+    // the FromStr trait. >.>
+    fn apply(&self, n: f64) -> f64 {
+        match self {
+            &Operation::Add(value) => n + value,
+            &Operation::Subtract(value) => n - value,
+            &Operation::Multiply(value) => n * value,
+            &Operation::Divide(value) => n / value,
+        }
+    }
 }
 
 impl FromStr for Operation {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Operation, &'static str> {
-        match s {
-            "+" => Ok(Operation::Add),
-            "-" => Ok(Operation::Subtract),
-            "*" => Ok(Operation::Multiply),
-            "/" => Ok(Operation::Divide),
-            _ => Err("No dice."),
-        }
-    }
-}
-
-struct Instruction {
-    op: Operation,
-    value: f64,
-}
-
-impl Instruction {
-    fn apply(&self, n: f64) -> f64 {
-        match self.op {
-            Operation::Add => n + self.value,
-            Operation::Subtract => n - self.value,
-            Operation::Multiply => n * self.value,
-            Operation::Divide => n / self.value,
-        }
-    }
-}
-
-impl FromStr for Instruction {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Instruction, &'static str> {
-        let op = match s[0..1].parse() {
-            Ok(op) => op,
-            _ => return Err("Unable to parse operation."),
-        };
-
+        // If we are unable to figure out the value for the 
+        // operation, return the error early.
         let value = match s[1..].parse() {
             Ok(value) => value,
-            _ => return Err("Unable to parse value."),
+            Err(_) => return Err("Unable to parse operation value."),
         };
 
-        Ok(Instruction {
-            op: op,
-            value: value,
-        })
+        // Here we have to parse just the first character in 
+        // the command string, so I'm gonna use a slice to 
+        // get that (as an &str). Kind of equivalent to a 
+        // substring in everything else I've ever done.
+        match &s[..1] {
+            "+" => Ok(Operation::Add(value)),
+            "-" => Ok(Operation::Subtract(value)),
+            "*" => Ok(Operation::Multiply(value)),
+            "/" => Ok(Operation::Divide(value)),
+            _ => Err("Not a valid operation (should start with + - * /)."),
+        }
     }
 }
 
@@ -81,10 +69,10 @@ pub fn main() {
              .long("count")
              .help("Sets the length of the series.")
              .takes_value(true))
-        .arg(Arg::new("instructions")
-             .short("i")
-             .long("instructions")
-             .help("Defines the instructions used to create the series, e.g. \"+3 *2\"")
+        .arg(Arg::new("operations")
+             .short("o")
+             .long("operations")
+             .help("Defines the operations used to create the series, e.g. \"+3 *2\"")
              .takes_value(true))
         .get_matches();
 
@@ -124,10 +112,10 @@ pub fn main() {
     //
     // I should probably call the argument instructions instead of operations.
 
-    let instructions: Vec<Instruction> = match matches.value_of("instructions") {
+    let operations: Vec<Operation> = match matches.value_of("operations") {
         Some(input) => input.split(" ").filter_map(|s| s.parse().ok()).collect(),
         None => {
-            println!("Unable to parse instructions.");
+            println!("Unable to parse operations.");
             return;
         },
     };
@@ -135,7 +123,7 @@ pub fn main() {
     let mut i = seed;
     for _ in 0..count {
         println!("{}", i);
-        i = instructions.iter().fold(i, |a,b| b.apply(a));
+        i = operations.iter().fold(i, |a,b| b.apply(a));
     }
 }
 
