@@ -73,7 +73,8 @@ pub fn main() {
              .short("o")
              .long("operations")
              .help("Defines the operations used to create the series, e.g. \"+3 *2\"")
-             .takes_value(true))
+             .takes_value(true)
+             .multiple(true))
         .get_matches();
 
     let seed = match matches.value_of("seed").and_then(|seed| seed.parse().ok()) {
@@ -92,28 +93,18 @@ pub fn main() {
         }
     };
 
-    // My evil plan was to use matches.occurrences_of("operation") to get the operations
-    // required to actually execute this, but the ugly unfortunateness of the afternoon
-    // is that the method in question returns a number, not the actual occurrences. This 
-    // is unfortunate. As a stop-gap, because I'm not planning to fork and submit a pull 
-    // request for this (at least not this afternoon!), I'm just going to take everything 
-    // that can be parsed as an instruction and call it one.
+    // As you can see, kbknapp has updated clap-rs with the ability to read multiple 
+    // values for a single key! This is wonderful news--at least for me, since I have 
+    // this goofy tendency to write code that requires that feature for some reason.
     //
-    // My plan did not work. The following code works, theoretically, but the arguments 
-    // required to make use of this code will throw an error in clap:
-    // 
-    //      let instructions: Vec<Instruction> = std::env::args()
-    //          .filter_map(|arg| arg.parse().ok())
-    //          .collect();
+    // ...Don't ask, ok? 
     //
-    // So... I'm going to have to have an argument named "operations" instead that takes 
-    // all of the operations as one chunk. I can then split the string they return to 
-    // get the individual instructions.
+    // All right, the last time around had something to do with a database seeder that 
+    // needed the ability to add arbitrary assemblies to its list at runtime.
     //
-    // I should probably call the argument instructions instead of operations.
-
-    let operations: Vec<Operation> = match matches.value_of("operations") {
-        Some(input) => input.split(" ").filter_map(|s| s.parse().ok()).collect(),
+    // Anyway, it works now: note the call below has changed to `values_of()`
+    let operations: Vec<Operation> = match matches.values_of("operations") {
+        Some(values) => values.iter().filter_map(|s| s.parse().ok()).collect(),
         None => {
             println!("Unable to parse operations.");
             return;
