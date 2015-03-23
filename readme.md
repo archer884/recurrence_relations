@@ -17,6 +17,4 @@ Clap is, apparently, not *just* a disease; it's also a command line argument par
 
 The author of clap, as it turns out, has actually implemented the one feature I thought it was missing since the original version of this application. Probably dumb luck on my part, but I'm going to pretend it's because he just felt so sorry for my silly /r/dailyprogrammer solution. :)
 
-There is currently a tiny little bug in how the library handles options that take multiple values and so *this* version of my application is actually built against my forked/patched version of the library, but I'm sure it'll be sorted out very soon and then I can delete my goofy fork. Unless I wanna keep it around for posterity.
-
-Totally my first PR on github. Apparently I'm a nerd, because I found that exciting.
+Initially, there was a little bug in clap that prevented me using the new hotness for this program, but the author quite graciously merged a pull request from me (my first ever on github!) and so everything is working perfectly at this point.
